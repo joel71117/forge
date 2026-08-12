@@ -1,4 +1,4 @@
-package com.forge.forge;
+package com.forge;
 
 import org.springframework.boot.SpringApplication;
 
