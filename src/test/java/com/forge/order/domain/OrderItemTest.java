@@ -1,8 +1,10 @@
 package com.forge.order.domain;
 
+import com.forge.commerce.common.Currency;
+import com.forge.commerce.common.Money;
+import com.forge.commerce.common.Quantity;
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,19 +14,12 @@ class OrderItemTest {
 
     @Test
     void shouldGenerateIdAndUpdateTotals() {
-        UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
 
-        OrderItem item = new OrderItem(orderId, productId, 2, new BigDecimal("15.00"), new BigDecimal("30.00"));
+        OrderItem item = new OrderItem(productId, new Quantity(2), Money.of("15.00", Currency.USD));
 
         assertNotNull(item.getId());
-        assertEquals(2L, item.getQuantity());
-        assertEquals(new BigDecimal("30.00"), item.getSubtotal());
-
-        item.setQuantity(3L);
-        item.setSubtotal(new BigDecimal("45.00"));
-
-        assertEquals(3L, item.getQuantity());
-        assertEquals(new BigDecimal("45.00"), item.getSubtotal());
+        assertEquals(new Quantity(2), item.getQuantity());
+        assertEquals(Money.of("30.00", Currency.USD), item.getSubtotal());
     }
 }

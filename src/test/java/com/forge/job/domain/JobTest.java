@@ -1,9 +1,8 @@
 package com.forge.job.domain;
 
+import com.forge.commerce.common.IdempotencyKey;
 import org.junit.jupiter.api.Test;
 
-import java.time.Instant;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,22 +12,20 @@ class JobTest {
 
     @Test
     void shouldGenerateIdAndSupportStatusMutation() {
-        Instant now = Instant.now();
         UUID tenantId = UUID.randomUUID();
-        Map<String, Object> payload = Map.of("orderId", "123");
 
-        Job job = new Job("invoice-generation", tenantId, payload, 5, JobStatus.QUEUED,
-                now, 0, 3, now, now, now, null, null, now);
+        Job job = new Job(JobType.SEND_NOTIFICATION, tenantId, "payload", JobPriority.HIGH,
+                new IdempotencyKey("idem-001"));
 
         assertNotNull(job.getId());
-        assertEquals("invoice-generation", job.getType());
+        assertEquals(JobType.SEND_NOTIFICATION, job.getType());
         assertEquals(JobStatus.QUEUED, job.getStatus());
 
-        job.setStatus(JobStatus.RUNNING);
-        job.setRetryCount(1);
-        job.setUpdatedAt(now.plusSeconds(10));
+        job.start();
+        job.fail();
+        job.retry();
 
-        assertEquals(JobStatus.RUNNING, job.getStatus());
+        assertEquals(JobStatus.RETRYING, job.getStatus());
         assertEquals(1, job.getRetryCount());
     }
 }

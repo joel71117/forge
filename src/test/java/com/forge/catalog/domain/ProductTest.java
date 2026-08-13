@@ -1,9 +1,9 @@
 package com.forge.catalog.domain;
 
+import com.forge.commerce.common.Currency;
+import com.forge.commerce.common.Money;
+import com.forge.commerce.common.Sku;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,19 +12,16 @@ class ProductTest {
 
     @Test
     void shouldGenerateIdAndStoreValues() {
-        Instant now = Instant.now();
-
-        Product product = new Product("SKU-001", "Laptop", "Gaming laptop", new BigDecimal("1299.99"), "USD",
-                ProductStatus.ACTIVE, now, now);
+        Product product = new Product(new Sku("SKU-001"), "Laptop", "Gaming laptop",
+                Money.of("1299.99", Currency.USD), ProductStatus.ACTIVE);
 
         assertNotNull(product.getId());
-        assertEquals("SKU-001", product.getSku());
+        assertEquals(new Sku("SKU-001"), product.getSku());
         assertEquals("Laptop", product.getName());
         assertEquals(ProductStatus.ACTIVE, product.getStatus());
+        assertEquals(Money.of("1299.99", Currency.USD), product.getPrice());
 
-        product.setPrice(new BigDecimal("1199.99"));
-        product.setUpdatedAt(now.plusSeconds(10));
-
-        assertEquals(new BigDecimal("1199.99"), product.getPrice());
+        product.deactivate();
+        assertEquals(ProductStatus.INACTIVE, product.getStatus());
     }
 }
