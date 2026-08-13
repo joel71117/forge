@@ -1,34 +1,114 @@
 package com.forge.inventory.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import com.forge.commerce.common.Quantity;
 
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
-@Getter
-@Setter
-@AllArgsConstructor
+/**
+ * Reservation state machine.
+ *
+ * <p>It uses explicit methods instead of a public setStatus method so callers cannot bypass
+ * the valid transitions and put the object into an impossible state.</p>
+ */
 public class InventoryReservation {
     private final InventoryReservationId id;
     private final UUID orderId;
     private final UUID productId;
-    private long quantity;
+    private final Quantity quantity;
     private ReservationStatus status;
-    private Instant expiresAt;
-    private final Instant createdAt;
-    private Instant updatedAt;
+    private final Instant expiresAt;
 
-    public InventoryReservation(UUID orderId, UUID productId, long quantity, ReservationStatus status,
-                               Instant expiresAt, Instant createdAt, Instant updatedAt) {
+    public InventoryReservation(UUID orderId, UUID productId, Quantity quantity, ReservationStatus status, Instant expiresAt) {
+        if (orderId == null) {
+            throw new IllegalArgumentException("OrderId cannot be null.");
+        }
+        if (productId == null) {
+            throw new IllegalArgumentException("ProductId cannot be null.");
+        }
+        if (quantity == null) {
+            throw new IllegalArgumentException("Quantity cannot be null.");
+        }
+        if (status == null) {
+            throw new IllegalArgumentException("Reservation status cannot be null.");
+        }
         this.id = new InventoryReservationId(UUID.randomUUID());
         this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;
         this.status = status;
         this.expiresAt = expiresAt;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+    }
+
+    public InventoryReservationId getId() {
+        return id;
+    }
+
+    public UUID getOrderId() {
+        return orderId;
+    }
+
+    public UUID getProductId() {
+        return productId;
+    }
+
+    public Quantity getQuantity() {
+        return quantity;
+    }
+
+    public ReservationStatus getStatus() {
+        return status;
+    }
+
+    public Instant getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void reserve() {
+        if (status != ReservationStatus.PENDING) {
+            throw new IllegalStateException("Only PENDING reservations can be reserved.");
+        }
+        this.status = ReservationStatus.RESERVED;
+    }
+
+    public void consume() {
+        if (status != ReservationStatus.RESERVED) {
+            throw new IllegalStateException("Only RESERVED reservations can be consumed.");
+        }
+        this.status = ReservationStatus.CONSUMED;
+    }
+
+    public void release() {
+        if (status != ReservationStatus.RESERVED) {
+            throw new IllegalStateException("Only RESERVED reservations can be released.");
+        }
+        this.status = ReservationStatus.RELEASED;
+    }
+
+    public void expire() {
+        if (status == ReservationStatus.CONSUMED || status == ReservationStatus.RELEASED || status == ReservationStatus.CANCELLED) {
+            throw new IllegalStateException("This reservation cannot expire in its current state.");
+        }
+        this.status = ReservationStatus.EXPIRED;
+    }
+
+    public void cancel() {
+        if (status == ReservationStatus.CONSUMED || status == ReservationStatus.RELEASED) {
+            throw new IllegalStateException("Consumed or released reservations cannot be cancelled.");
+        }
+        this.status = ReservationStatus.CANCELLED;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InventoryReservation that)) return false;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

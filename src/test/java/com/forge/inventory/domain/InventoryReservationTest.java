@@ -1,5 +1,6 @@
 package com.forge.inventory.domain;
 
+import com.forge.commerce.common.Quantity;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -12,20 +13,20 @@ class InventoryReservationTest {
 
     @Test
     void shouldGenerateIdAndTrackStatus() {
-        Instant now = Instant.now();
         UUID orderId = UUID.randomUUID();
         UUID productId = UUID.randomUUID();
+        Instant expiresAt = Instant.now().plusSeconds(300);
 
-        InventoryReservation reservation = new InventoryReservation(orderId, productId, 3, ReservationStatus.PENDING,
-                now.plusSeconds(300), now, now);
+        InventoryReservation reservation = new InventoryReservation(orderId, productId,
+                new Quantity(3), ReservationStatus.PENDING, expiresAt);
 
         assertNotNull(reservation.getId());
         assertEquals(orderId, reservation.getOrderId());
         assertEquals(ReservationStatus.PENDING, reservation.getStatus());
 
-        reservation.setStatus(ReservationStatus.RESERVED);
-        reservation.setUpdatedAt(now.plusSeconds(15));
+        reservation.reserve();
+        reservation.consume();
 
-        assertEquals(ReservationStatus.RESERVED, reservation.getStatus());
+        assertEquals(ReservationStatus.CONSUMED, reservation.getStatus());
     }
 }
