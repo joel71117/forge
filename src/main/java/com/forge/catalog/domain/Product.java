@@ -9,16 +9,20 @@ import java.util.UUID;
 /**
  * A product is an aggregate root in the catalog boundary.
  *
- * <p>The object keeps its invariants in the constructor: no blank SKU, no negative price,
- * and a valid lifecycle state. This is the essence of domain modelling: invalid states are
- * hard to create, and business decisions live close to the data they affect.</p>
+ * <p>
+ * The object keeps its invariants in the constructor: no blank SKU, no negative
+ * price,
+ * and a valid lifecycle state. This is the essence of domain modelling: invalid
+ * states are
+ * hard to create, and business decisions live close to the data they affect.
+ * </p>
  */
 public class Product {
     private final ProductId id;
     private final Sku sku;
-    private final String name;
-    private final String description;
-    private final Money price;
+    private String name;
+    private String description;
+    private Money price;
     private ProductStatus status;
 
     public Product(Sku sku, String name, String description, Money price, ProductStatus status) {
@@ -79,14 +83,28 @@ public class Product {
         this.status = ProductStatus.ACTIVE;
     }
 
+    public void updateDetails(String name, String description, Money price) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Product name cannot be blank.");
+        }
+        if (price == null) {
+            throw new IllegalArgumentException("Product price cannot be null.");
+        }
+        this.name = name.trim();
+        this.description = description == null ? "" : description.trim();
+        this.price = price;
+    }
+
     public boolean canBeOrdered() {
         return status == ProductStatus.ACTIVE;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Product product)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Product product))
+            return false;
         return Objects.equals(id, product.id);
     }
 
@@ -95,4 +113,3 @@ public class Product {
         return Objects.hash(id);
     }
 }
-

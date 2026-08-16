@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: Forge Commerce API
+  version: 1.0.0
+  description: Phase 2 in-memory commerce API.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/v1/products:
+    post:
+      summary: Create a product
+      responses:
+        '201': { description: Created }
+        '400': { description: Invalid request }
+    get:
+      summary: List products
+      parameters:
+        - { name: page, in: query, schema: { type: integer, default: 0 } }
+        - { name: size, in: query, schema: { type: integer, default: 20 } }
+      responses:
+        '200': { description: Product page }
+  /api/v1/orders:
+    post:
+      summary: Create or replay an order
+      parameters:
+        - { name: Idempotency-Key, in: header, required: true, schema: { type: string } }
+      responses:
+        '201': { description: Order created }
+        '400': { description: Invalid request }
+        '409': { description: Domain conflict }
+  /api/v1/orders/{id}/cancel:
+    post:
+      summary: Cancel a created order
+      responses:
+        '200': { description: Cancelled }
+        '404': { description: Not found }
+        '409': { description: State conflict }
+  /api/v1/inventory/reservations:
+    post:
+      summary: Reserve inventory
+      responses:
+        '200': { description: Reserved }
+        '409': { description: Insufficient inventory }
+  /api/v1/jobs:
+    post:
+      summary: Submit a job
+      responses:
+        '201': { description: Accepted }
+  /api/v1/notifications:
+    post:
+      summary: Create a notification
+      responses:
+        '201': { description: Created }
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [timestamp, status, code, message, path, details]
+      properties:
+        timestamp: { type: string, format: date-time }
+        status: { type: integer }
+        code: { type: string }
+        message: { type: string }
+        path: { type: string }
+        traceId: { type: string, nullable: true }
+        details: { type: array, items: { type: string } }

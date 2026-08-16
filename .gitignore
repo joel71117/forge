@@ -3,6 +3,9 @@ target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+/database
+/main/resources/META-INF
+/src/main/resources/META-INF/additional-spring-configuration-metadata.json
 
 ### STS ###
 .apt_generated

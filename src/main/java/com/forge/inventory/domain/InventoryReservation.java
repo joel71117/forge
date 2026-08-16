@@ -1,6 +1,13 @@
 package com.forge.inventory.domain;
 
 import com.forge.commerce.common.Quantity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -12,13 +19,31 @@ import java.util.UUID;
  * <p>It uses explicit methods instead of a public setStatus method so callers cannot bypass
  * the valid transitions and put the object into an impossible state.</p>
  */
+@Entity
+@Table(name = "inventory_reservations")
 public class InventoryReservation {
-    private final InventoryReservationId id;
-    private final UUID orderId;
-    private final UUID productId;
-    private final Quantity quantity;
+    @Id
+    private UUID id;
+
+    @Column(name = "order_id", nullable = false, updatable = false)
+    private UUID orderId;
+
+    @Column(name = "product_id", nullable = false, updatable = false)
+    private UUID productId;
+
+    @Column(name = "quantity", nullable = false, updatable = false)
+    @Convert(converter = QuantityConverter.class)
+    private Quantity quantity;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ReservationStatus status;
-    private final Instant expiresAt;
+
+    @Column(name = "expires_at")
+    private Instant expiresAt;
+
+    protected InventoryReservation() {
+    }
 
     public InventoryReservation(UUID orderId, UUID productId, Quantity quantity, ReservationStatus status, Instant expiresAt) {
         if (orderId == null) {
@@ -33,7 +58,7 @@ public class InventoryReservation {
         if (status == null) {
             throw new IllegalArgumentException("Reservation status cannot be null.");
         }
-        this.id = new InventoryReservationId(UUID.randomUUID());
+        this.id = UUID.randomUUID();
         this.orderId = orderId;
         this.productId = productId;
         this.quantity = quantity;
@@ -42,7 +67,7 @@ public class InventoryReservation {
     }
 
     public InventoryReservationId getId() {
-        return id;
+        return new InventoryReservationId(id);
     }
 
     public UUID getOrderId() {
