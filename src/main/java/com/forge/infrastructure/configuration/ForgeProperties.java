@@ -53,6 +53,7 @@ public class ForgeProperties {
 
     public static class Job {
         private int defaultMaxRetries = 3;
+        private final Executor executor = new Executor();
 
         public int getDefaultMaxRetries() {
             return defaultMaxRetries;
@@ -60,6 +61,76 @@ public class ForgeProperties {
 
         public void setDefaultMaxRetries(int retries) {
             this.defaultMaxRetries = retries;
+        }
+
+        public Executor getExecutor() {
+            return executor;
+        }
+
+        public static class Executor {
+            private int corePoolSize = 4;
+            private int maxPoolSize = 8;
+            private int queueCapacity = 1000;
+            private Duration keepAliveTime = Duration.ofSeconds(60);
+            private Duration shutdownTimeout = Duration.ofSeconds(30);
+            private Duration baseRetryDelay = Duration.ofMillis(100);
+            private Duration maxRetryDelay = Duration.ofSeconds(30);
+
+            public int getCorePoolSize() {
+                return corePoolSize;
+            }
+
+            public void setCorePoolSize(int value) {
+                corePoolSize = value;
+            }
+
+            public int getMaxPoolSize() {
+                return maxPoolSize;
+            }
+
+            public void setMaxPoolSize(int value) {
+                maxPoolSize = value;
+            }
+
+            public int getQueueCapacity() {
+                return queueCapacity;
+            }
+
+            public void setQueueCapacity(int value) {
+                queueCapacity = value;
+            }
+
+            public Duration getKeepAliveTime() {
+                return keepAliveTime;
+            }
+
+            public void setKeepAliveTime(Duration value) {
+                keepAliveTime = value;
+            }
+
+            public Duration getShutdownTimeout() {
+                return shutdownTimeout;
+            }
+
+            public void setShutdownTimeout(Duration value) {
+                shutdownTimeout = value;
+            }
+
+            public Duration getBaseRetryDelay() {
+                return baseRetryDelay;
+            }
+
+            public void setBaseRetryDelay(Duration value) {
+                baseRetryDelay = value;
+            }
+
+            public Duration getMaxRetryDelay() {
+                return maxRetryDelay;
+            }
+
+            public void setMaxRetryDelay(Duration value) {
+                maxRetryDelay = value;
+            }
         }
     }
 
