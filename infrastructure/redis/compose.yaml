@@ -1,0 +1,15 @@
+services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: forge-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+    ports:
+      - "6379:6379"
+
+    volumes:
+      - forge-redis-data:/data
+
+volumes:
+  forge-redis-data:
