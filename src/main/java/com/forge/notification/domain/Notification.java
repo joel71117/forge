@@ -12,7 +12,7 @@ import java.util.UUID;
  * change in status and intent. The state machine makes those rules visible.</p>
  */
 public class Notification {
-    private final NotificationId id;
+    private NotificationId id;
     private final UUID customerId;
     private final String type;
     private final NotificationChannel channel;
@@ -45,6 +45,14 @@ public class Notification {
         this.priority = priority;
         this.idempotencyKey = idempotencyKey;
         this.status = NotificationStatus.PENDING;
+    }
+
+    public static Notification rehydrate(UUID id, UUID customerId, String type, NotificationChannel channel,
+            NotificationPriority priority, String idempotencyKey, NotificationStatus status) {
+        var notification = new Notification(customerId, type, channel, priority, new IdempotencyKey(idempotencyKey));
+        notification.id = new NotificationId(id);
+        notification.status = status;
+        return notification;
     }
 
     public NotificationId getId() {

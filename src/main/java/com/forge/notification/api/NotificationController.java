@@ -2,7 +2,6 @@ package com.forge.notification.api;
 
 import com.forge.notification.api.dto.*;
 import com.forge.notification.application.NotificationService;
-import com.forge.notification.domain.Notification;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,21 +22,16 @@ public class NotificationController {
             @Valid @RequestBody CreateNotificationRequest request) {
         var notification = service.create(key, request);
         return ResponseEntity.created(URI.create("/api/v1/notifications/" + notification.getId().value()))
-                .body(toResponse(notification));
+                .body(NotificationResponse.from(notification));
     }
 
     @GetMapping("/{id}")
     public NotificationResponse get(@PathVariable UUID id) {
-        return toResponse(service.get(id));
+        return NotificationResponse.from(service.get(id));
     }
 
     @PostMapping("/{id}/cancel")
     public NotificationResponse cancel(@PathVariable UUID id) {
-        return toResponse(service.cancel(id));
-    }
-
-    private NotificationResponse toResponse(Notification n) {
-        return new NotificationResponse(n.getId().toString(), n.getCustomerId().toString(), n.getType(), n.getChannel(),
-                n.getPriority(), n.getStatus());
+        return NotificationResponse.from(service.cancel(id));
     }
 }
