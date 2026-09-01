@@ -26,10 +26,10 @@ class ProductTest {
         assertEquals(ProductStatus.INACTIVE, product.getStatus());
     }
 
-        @Test
-        void shouldNormalizeDetailsAndDefaultMissingDescription() {
+    @Test
+    void shouldNormalizeDetailsAndDefaultMissingDescription() {
         Product product = new Product(new Sku(" SKU-001 "), "  Laptop  ", null,
-            Money.of("10", Currency.USD), ProductStatus.ACTIVE);
+                Money.of("10", Currency.USD), ProductStatus.ACTIVE);
 
         assertEquals("SKU-001", product.getSku().value());
         assertEquals("Laptop", product.getName());
@@ -40,31 +40,31 @@ class ProductTest {
         assertEquals("Updated laptop", product.getName());
         assertEquals("", product.getDescription());
         assertEquals(Money.of("12.50", Currency.USD), product.getPrice());
-        }
+    }
 
-        @Test
-        void shouldRejectInvalidConstructionAndUpdates() {
+    @Test
+    void shouldRejectInvalidConstructionAndUpdates() {
         assertThrows(IllegalArgumentException.class,
-            () -> new Product(null, "Laptop", "", Money.of("10", Currency.USD), ProductStatus.ACTIVE));
+                () -> new Product(null, "Laptop", "", Money.of("10", Currency.USD), ProductStatus.ACTIVE));
         assertThrows(IllegalArgumentException.class,
-            () -> new Product(new Sku("SKU-001"), " ", "", Money.of("10", Currency.USD), ProductStatus.ACTIVE));
+                () -> new Product(new Sku("SKU-001"), " ", "", Money.of("10", Currency.USD), ProductStatus.ACTIVE));
         assertThrows(IllegalArgumentException.class,
-            () -> new Product(new Sku("SKU-001"), "Laptop", "", null, ProductStatus.ACTIVE));
+                () -> new Product(new Sku("SKU-001"), "Laptop", "", null, ProductStatus.ACTIVE));
         assertThrows(IllegalArgumentException.class,
-            () -> new Product(new Sku("SKU-001"), "Laptop", "", Money.of("10", Currency.USD), null));
+                () -> new Product(new Sku("SKU-001"), "Laptop", "", Money.of("10", Currency.USD), null));
 
         Product product = new Product(new Sku("SKU-001"), "Laptop", "", Money.of("10", Currency.USD),
-            ProductStatus.ACTIVE);
+                ProductStatus.ACTIVE);
         assertThrows(IllegalArgumentException.class,
-            () -> product.updateDetails(null, "description", Money.of("10", Currency.USD)));
+                () -> product.updateDetails(null, "description", Money.of("10", Currency.USD)));
         assertThrows(IllegalArgumentException.class,
-            () -> product.updateDetails("Laptop", "description", null));
-        }
+                () -> product.updateDetails("Laptop", "description", null));
+    }
 
-        @Test
-        void shouldReflectLifecycleInOrderingRule() {
+    @Test
+    void shouldReflectLifecycleInOrderingRule() {
         Product product = new Product(new Sku("SKU-001"), "Laptop", "", Money.of("10", Currency.USD),
-            ProductStatus.ACTIVE);
+                ProductStatus.ACTIVE);
 
         assertEquals(true, product.canBeOrdered());
         product.deactivate();
@@ -73,5 +73,5 @@ class ProductTest {
         assertEquals(ProductStatus.DISCONTINUED, product.getStatus());
         product.activate();
         assertEquals(true, product.canBeOrdered());
-        }
+    }
 }
