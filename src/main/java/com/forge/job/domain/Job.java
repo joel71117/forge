@@ -12,7 +12,7 @@ import java.util.UUID;
  * dead-letter state. That is a core business concept, not a generic integer property.</p>
  */
 public class Job {
-    private final JobId id;
+    private JobId id;
     private final JobType type;
     private final UUID tenantId;
     private final String payload;
@@ -55,6 +55,15 @@ public class Job {
         this.retryCount = 0;
         this.maxRetries = maxRetries;
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public static Job rehydrate(UUID id, JobType type, UUID tenantId, String payload, JobPriority priority,
+            JobStatus status, int retryCount, int maxRetries, String idempotencyKey) {
+        var job = new Job(type, tenantId, payload, priority, maxRetries, new IdempotencyKey(idempotencyKey));
+        job.id = new JobId(id);
+        job.status = status;
+        job.retryCount = retryCount;
+        return job;
     }
 
     public JobId getId() {

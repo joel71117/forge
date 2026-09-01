@@ -20,19 +20,13 @@ public class InventoryController {
 
     @GetMapping
     public ResponseEntity<InventoryResponse> get(@PathVariable String productId) {
-        var pid = UUID.fromString(productId);
-        var inventory = service.get(pid);
-        return ResponseEntity.ok(new InventoryResponse(pid.toString(), inventory.getAvailableQuantity(),
-                inventory.getReservedQuantity()));
+        return ResponseEntity.ok(InventoryResponse.from(service.get(UUID.fromString(productId))));
     }
 
     @PostMapping
     public ResponseEntity<InventoryResponse> increase(@PathVariable String productId,
             @Valid @RequestBody IncreaseInventoryRequest req) {
-        var pid = UUID.fromString(productId);
-        var inventory = service.increase(pid, req.quantity);
-        return ResponseEntity.ok(new InventoryResponse(pid.toString(), inventory.getAvailableQuantity(),
-                inventory.getReservedQuantity()));
+        return ResponseEntity.ok(InventoryResponse.from(service.increase(UUID.fromString(productId), req.quantity)));
     }
 
 }

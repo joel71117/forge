@@ -4,11 +4,13 @@ import com.forge.job.application.port.JobRepository;
 import com.forge.job.domain.Job;
 import com.forge.job.domain.JobId;
 import org.springframework.stereotype.Repository;
+import org.springframework.context.annotation.Profile;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@Profile("!local")
 public class InMemoryJobRepository implements JobRepository {
     private final ConcurrentHashMap<JobId, Job> store = new ConcurrentHashMap<>();
 
