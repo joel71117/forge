@@ -54,7 +54,9 @@ class ProcessedEventStoreTest {
 
         assertEquals("handler failed", org.junit.jupiter.api.Assertions.assertThrows(
                 IllegalStateException.class,
-                () -> store.process(eventId, "consumer", () -> { throw new IllegalStateException("handler failed"); }))
+                () -> store.process(eventId, "consumer", () -> {
+                    throw new IllegalStateException("handler failed");
+                }))
                 .getMessage());
 
         verify(jdbc).update(anyString(), eventId, "consumer");
