@@ -3,7 +3,6 @@ package com.forge.infrastructure.events;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.forge.common.application.EventEnvelope;
 import java.util.List;
@@ -19,9 +18,10 @@ class EventPublisherTest {
 
         publisher.publish(event);
 
-        assertEquals(List.of(event), publisher.events());
+        List<EventEnvelope> events = publisher.events();
+        assertEquals(List.of(event), events);
         org.junit.jupiter.api.Assertions.assertThrows(UnsupportedOperationException.class,
-                () -> publisher.events().add(event));
+                () -> events.add(event));
     }
 
     @Test

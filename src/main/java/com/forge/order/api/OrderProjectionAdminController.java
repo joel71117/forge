@@ -1,5 +1,6 @@
 package com.forge.order.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forge.common.application.EventEnvelope;
 import com.forge.infrastructure.events.OutboxEventStore;
@@ -26,8 +27,8 @@ public class OrderProjectionAdminController {
     }
 
     @PostMapping("/replay")
-    @Transactional
-    public ReplayResponse replay() throws Exception {
+    @Transactional(rollbackFor = JsonProcessingException.class)
+    public ReplayResponse replay() throws JsonProcessingException {
         projection.clear();
         int applied = 0;
         for (var payload : outbox.historyFor("Order")) {

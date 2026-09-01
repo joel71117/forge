@@ -13,13 +13,13 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /** Central access point for the optional Redis infrastructure features. */
-@Component
+@Configuration
 public class RedisUtils implements WebMvcConfigurer {
     private static final DefaultRedisScript<Long> RELEASE_SCRIPT = new DefaultRedisScript<>(
             "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end",
@@ -33,7 +33,6 @@ public class RedisUtils implements WebMvcConfigurer {
     private final int rateLimit;
     private final Duration rateLimitWindow;
 
-    @Autowired
     public RedisUtils(StringRedisTemplate redis, ObjectMapper objectMapper,
             boolean cacheEnabled, long cacheTtlSeconds, boolean rateLimitEnabled,
             int rateLimit, long rateLimitWindowSeconds) {

@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -72,10 +71,16 @@ class RedisRateLimitInterceptorTest {
     @Test
     void rejectsInvalidSettings() {
         StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
+        ObjectMapper objectMapper = new ObjectMapper();
         assertThrows(IllegalArgumentException.class,
-                () -> new RedisUtils(redisTemplate, new ObjectMapper(), true, 60, true, 0, 60));
+                () -> invalidRateLimitSettings(redisTemplate, objectMapper, 0, 60));
         assertThrows(IllegalArgumentException.class,
-                () -> new RedisUtils(redisTemplate, new ObjectMapper(), true, 60, true, 1, 0));
+                () -> invalidRateLimitSettings(redisTemplate, objectMapper, 1, 0));
+    }
+
+    private static RedisUtils invalidRateLimitSettings(StringRedisTemplate redisTemplate,
+            ObjectMapper objectMapper, int rateLimit, long windowSeconds) {
+        return new RedisUtils(redisTemplate, objectMapper, true, 60, true, rateLimit, windowSeconds);
     }
 
     private static HttpServletRequest request(String remoteAddress, String uri, String forwarded) {
