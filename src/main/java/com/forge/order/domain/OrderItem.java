@@ -13,7 +13,7 @@ import java.util.UUID;
  * the catalog. The item remembers the historical price it was purchased at.</p>
  */
 public class OrderItem {
-    private final OrderItemId id;
+    private OrderItemId id;
     private final UUID productId;
     private final Quantity quantity;
     private final Money unitPrice;
@@ -32,6 +32,12 @@ public class OrderItem {
         this.productId = productId;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
+    }
+
+    public static OrderItem rehydrate(UUID id, UUID productId, Quantity quantity, Money unitPrice) {
+        var item = new OrderItem(productId, quantity, unitPrice);
+        item.id = new OrderItemId(id);
+        return item;
     }
 
     public OrderItemId getId() {

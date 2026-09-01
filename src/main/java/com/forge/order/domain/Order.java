@@ -17,7 +17,7 @@ import java.util.UUID;
  * statuses and accidentally break invariants. The list is also kept read-only from the outside.</p>
  */
 public class Order {
-    private final OrderId id;
+    private OrderId id;
     private final CustomerId customerId;
     private final List<OrderItem> items = new ArrayList<>();
     private final Currency currency;
@@ -39,6 +39,15 @@ public class Order {
         this.currency = currency;
         this.idempotencyKey = idempotencyKey;
         this.status = OrderStatus.CREATED;
+    }
+
+    public static Order rehydrate(UUID id, UUID customerId, Currency currency, String idempotencyKey,
+            OrderStatus status, List<OrderItem> items) {
+        var order = new Order(new CustomerId(customerId), currency, new IdempotencyKey(idempotencyKey));
+        order.id = new OrderId(id);
+        order.status = status;
+        order.items.addAll(items);
+        return order;
     }
 
     public OrderId getId() {
