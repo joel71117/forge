@@ -18,16 +18,16 @@ public class DistributedMetrics {
 
     public DistributedMetrics(OutboxEventStore outbox, JobExecutor jobExecutor, MeterRegistry meterRegistry) {
         this.outbox = outbox;
-        Gauge.builder("forge.outbox.pending", () -> pendingOutboxEvents.get())
+        Gauge.builder("forge.outbox.pending", pendingOutboxEvents::get)
                 .description("Outbox events awaiting publication or recovery")
                 .register(meterRegistry);
-        Gauge.builder("forge.jobs.queue.depth", () -> jobExecutor.queueDepth())
+        Gauge.builder("forge.jobs.queue.depth", jobExecutor::queueDepth)
                 .description("Jobs waiting for local execution")
                 .register(meterRegistry);
-        Gauge.builder("forge.jobs.submitted", () -> jobExecutor.submittedCount())
+        Gauge.builder("forge.jobs.submitted", jobExecutor::submittedCount)
                 .description("Jobs submitted to the executor")
                 .register(meterRegistry);
-        Gauge.builder("forge.jobs.failed", () -> jobExecutor.failedCount())
+        Gauge.builder("forge.jobs.failed", jobExecutor::failedCount)
                 .description("Job execution failures")
                 .register(meterRegistry);
     }

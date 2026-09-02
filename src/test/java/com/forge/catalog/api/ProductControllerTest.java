@@ -115,7 +115,7 @@ class ProductControllerTest {
         @Test
         void updateProduct_validRequest_returns200() throws Exception {
                 var productId = UUID.randomUUID();
-                when(productService.update(eq(productId), eq("Laptop"), eq("Updated"), eq(new BigDecimal("50.00"))))
+                when(productService.update(productId, "Laptop", "Updated", new BigDecimal("50.00")))
                                 .thenReturn(new Product(new Sku("SKU-001"), "Laptop", "Updated",
                                                 Money.of("50", Currency.USD), ProductStatus.ACTIVE));
 

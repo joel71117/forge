@@ -43,7 +43,21 @@ services:
     volumes:
       - forge-kafka-data:/var/lib/kafka/data
 
+  sonarqube:
+    image: sonarqube:community
+    container_name: forge-sonarqube
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - forge-sonarqube-data:/opt/sonarqube/data
+      - forge-sonarqube-logs:/opt/sonarqube/logs
+      - forge-sonarqube-extensions:/opt/sonarqube/extensions
+
 volumes:
   forge-postgres-data:
   forge-redis-data:
   forge-kafka-data:
+  forge-sonarqube-data:
+  forge-sonarqube-logs:
+  forge-sonarqube-extensions:

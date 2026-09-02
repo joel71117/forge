@@ -15,8 +15,12 @@ class NotificationAttemptTest {
         Instant started = Instant.now();
         Instant finished = started.plusSeconds(10);
 
-        NotificationAttempt attempt = new NotificationAttempt(UUID.randomUUID(), "twilio", 1,
-                started, finished, "FAILED", "ref-88", "E-42", "provider timeout");
+        NotificationAttempt attempt = new NotificationAttempt(UUID.randomUUID(), "twilio", 1, started);
+        attempt.setFinishedAt(finished);
+        attempt.setStatus("FAILED");
+        attempt.setProviderReference("ref-88");
+        attempt.setErrorCode("E-42");
+        attempt.setErrorMessage("provider timeout");
 
         assertNotNull(attempt.getId());
         assertEquals("twilio", attempt.getProvider());

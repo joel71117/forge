@@ -23,12 +23,12 @@ public class JdbcJobRepository implements JobRepository {
 
     @Override
     public Optional<Job> findById(JobId id) {
-        return query("WHERE id = ?", id.value());
+        return queryById(id.value());
     }
 
     @Override
     public Optional<Job> findByIdempotencyKey(String key) {
-        return query("WHERE idempotency_key = ?", key);
+        return queryByIdempotencyKey(key);
     }
 
     @Override
@@ -50,8 +50,16 @@ public class JdbcJobRepository implements JobRepository {
         return job;
     }
 
-    private Optional<Job> query(String clause, Object parameter) {
-        return jdbcTemplate.query("SELECT * FROM jobs " + clause, resultSet -> {
+    private Optional<Job> queryById(Object parameter) {
+        return query("SELECT * FROM jobs WHERE id = ?", parameter);
+    }
+
+    private Optional<Job> queryByIdempotencyKey(Object parameter) {
+        return query("SELECT * FROM jobs WHERE idempotency_key = ?", parameter);
+    }
+
+    private Optional<Job> query(String sql, Object parameter) {
+        return jdbcTemplate.query(sql, resultSet -> {
             if (!resultSet.next()) {
                 return Optional.empty();
             }

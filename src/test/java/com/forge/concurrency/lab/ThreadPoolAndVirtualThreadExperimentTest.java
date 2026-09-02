@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 class ThreadPoolAndVirtualThreadExperimentTest {
 
     @Test
-    void boundedPoolRejectsWhenWorkersAndQueueAreFull() throws InterruptedException {
+    void boundedPoolRejectsWhenWorkersAndQueueAreFull() {
         ThreadPoolExecutorExperiment experiment = new ThreadPoolExecutorExperiment();
         ThreadPoolExecutor executor = experiment.create(1, 1, 1, ThreadPoolExecutorExperiment.abortPolicy());
         CountDownLatch release = new CountDownLatch(1);

@@ -21,12 +21,12 @@ public class NotificationDeliveryService {
     }
 
     public String deliver(UUID notificationId) {
-        Notification notification = repository.findById(new com.forge.notification.domain.NotificationId(notificationId))
+        Notification notification = repository
+                .findById(new com.forge.notification.domain.NotificationId(notificationId))
                 .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
         notification.startProcessing();
         repository.save(notification);
-        NotificationAttempt attempt = new NotificationAttempt(notificationId, "configured", 1, Instant.now(),
-                null, "PROCESSING", null, null, null);
+        NotificationAttempt attempt = new NotificationAttempt(notificationId, "configured", 1, Instant.now());
         repository.saveAttempt(attempt);
         try {
             String reference = provider.send(notification);

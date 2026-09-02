@@ -20,12 +20,12 @@ public class JdbcNotificationRepository implements NotificationRepository {
 
     @Override
     public Optional<Notification> findById(NotificationId id) {
-        return find("id = ?", id.value());
+        return findByIdValue(id.value());
     }
 
     @Override
     public Optional<Notification> findByIdempotencyKey(String key) {
-        return find("idempotency_key = ?", key);
+        return findByIdempotencyKeyValue(key);
     }
 
     @Override
@@ -58,8 +58,16 @@ public class JdbcNotificationRepository implements NotificationRepository {
         return attempt;
     }
 
-    private Optional<Notification> find(String clause, Object parameter) {
-        return jdbcTemplate.query("SELECT * FROM notifications WHERE " + clause, rs -> {
+    private Optional<Notification> findByIdValue(Object parameter) {
+        return find("SELECT * FROM notifications WHERE id = ?", parameter);
+    }
+
+    private Optional<Notification> findByIdempotencyKeyValue(Object parameter) {
+        return find("SELECT * FROM notifications WHERE idempotency_key = ?", parameter);
+    }
+
+    private Optional<Notification> find(String sql, Object parameter) {
+        return jdbcTemplate.query(sql, rs -> {
             if (!rs.next()) return Optional.empty();
             return Optional.of(Notification.rehydrate(rs.getObject("id", UUID.class),
                     rs.getObject("customer_id", UUID.class), rs.getString("type"),

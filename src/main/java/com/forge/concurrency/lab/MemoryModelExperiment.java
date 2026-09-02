@@ -1,10 +1,12 @@
 package com.forge.concurrency.lab;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public final class MemoryModelExperiment {
 
     private final Object lock = new Object();
     private int synchronizedValue;
-    private volatile PublishedData publishedData;
+    private final AtomicReference<PublishedData> publishedData = new AtomicReference<>();
 
     public static int valuePublishedByStart() throws InterruptedException {
         int[] value = { 42 };
@@ -37,11 +39,11 @@ public final class MemoryModelExperiment {
     }
 
     public void publishSafely(PublishedData data) {
-        publishedData = data;
+        publishedData.set(data);
     }
 
     public PublishedData readPublishedData() {
-        return publishedData;
+        return publishedData.get();
     }
 
     private static void assertValue(int value) {

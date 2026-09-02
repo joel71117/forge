@@ -2,6 +2,7 @@ package com.forge.order.infrastructure.projection;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forge.common.application.EventEnvelope;
 import com.forge.infrastructure.events.ProcessedEventStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,7 +25,7 @@ public class OrderProjectionConsumer {
     }
 
     @KafkaListener(topics = "${forge.kafka.events-topic}", groupId = "order-summary-projection")
-    public void consume(String message) throws Exception {
+    public void consume(String message) throws JsonProcessingException {
         EventEnvelope event = objectMapper.readValue(message, EventEnvelope.class);
         if (!event.aggregateType().equals("Order")) {
             return;

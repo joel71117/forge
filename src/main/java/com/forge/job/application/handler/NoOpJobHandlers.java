@@ -4,6 +4,7 @@ import com.forge.job.domain.Job;
 import com.forge.job.domain.JobType;
 import org.springframework.stereotype.Component;
 
+@SuppressWarnings("java:S1186")
 final class NoOpJobHandlers {
     private NoOpJobHandlers() {
     }

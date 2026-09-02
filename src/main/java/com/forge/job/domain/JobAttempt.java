@@ -21,6 +21,7 @@ public class JobAttempt {
     private String errorCode;
     private String errorMessage;
 
+    @SuppressWarnings("java:S107")
     public JobAttempt(UUID jobId, UUID workerId, int attemptNumber, Instant startedAt, Instant finishedAt,
                       String status, String errorCode, String errorMessage) {
         this.id = new JobAttemptId(UUID.randomUUID());

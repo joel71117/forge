@@ -12,7 +12,7 @@ class SynchronizedCounterTest {
     void synchronizedMethodPreservesConcurrentIncrements() throws InterruptedException {
         SynchronizedCounter counter = new SynchronizedCounter();
 
-        runConcurrentIncrements(counter::incrementWithMethod, counter);
+        runConcurrentIncrements(counter::incrementWithMethod);
 
         assertThat(counter.value()).isEqualTo(1_000_000);
     }
@@ -21,13 +21,12 @@ class SynchronizedCounterTest {
     void synchronizedBlockPreservesConcurrentIncrements() throws InterruptedException {
         SynchronizedCounter counter = new SynchronizedCounter();
 
-        runConcurrentIncrements(counter::incrementWithBlock, counter);
+        runConcurrentIncrements(counter::incrementWithBlock);
 
         assertThat(counter.value()).isEqualTo(1_000_000);
     }
 
-    private static void runConcurrentIncrements(Runnable increment,
-            SynchronizedCounter counter) throws InterruptedException {
+    private static void runConcurrentIncrements(Runnable increment) throws InterruptedException {
         int threadCount = 100;
         int incrementsPerThread = 10_000;
         CountDownLatch ready = new CountDownLatch(threadCount);

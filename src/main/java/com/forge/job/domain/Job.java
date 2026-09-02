@@ -26,6 +26,7 @@ public class Job {
         this(type, tenantId, payload, priority, 3, idempotencyKey);
     }
 
+    @SuppressWarnings("java:S107")
     public Job(JobType type, UUID tenantId, String payload, JobPriority priority, int maxRetries, IdempotencyKey idempotencyKey) {
         if (type == null) {
             throw new IllegalArgumentException("Job type cannot be null.");
@@ -57,6 +58,7 @@ public class Job {
         this.idempotencyKey = idempotencyKey;
     }
 
+    @SuppressWarnings("java:S107")
     public static Job rehydrate(UUID id, JobType type, UUID tenantId, String payload, JobPriority priority,
             JobStatus status, int retryCount, int maxRetries, String idempotencyKey) {
         var job = new Job(type, tenantId, payload, priority, maxRetries, new IdempotencyKey(idempotencyKey));

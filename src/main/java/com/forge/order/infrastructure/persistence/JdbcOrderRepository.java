@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,12 +24,12 @@ public class JdbcOrderRepository implements OrderRepository {
 
     @Override
     public Optional<Order> findById(OrderId id) {
-        return find("o.id = ?", id.value());
+        return findByIdValue(id.value());
     }
 
     @Override
     public Optional<Order> findByIdempotencyKey(String key) {
-        return find("o.idempotency_key = ?", key);
+        return findByIdempotencyKeyValue(key);
     }
 
     @Override
@@ -64,8 +63,16 @@ public class JdbcOrderRepository implements OrderRepository {
         return order;
     }
 
-    private Optional<Order> find(String clause, Object parameter) {
-        return jdbcTemplate.query("SELECT o.* FROM orders o WHERE " + clause, rs -> {
+    private Optional<Order> findByIdValue(Object parameter) {
+        return find("SELECT o.* FROM orders o WHERE o.id = ?", parameter);
+    }
+
+    private Optional<Order> findByIdempotencyKeyValue(Object parameter) {
+        return find("SELECT o.* FROM orders o WHERE o.idempotency_key = ?", parameter);
+    }
+
+    private Optional<Order> find(String sql, Object parameter) {
+        return jdbcTemplate.query(sql, rs -> {
             if (!rs.next()) return Optional.empty();
             return Optional.of(rehydrate(rs.getObject("id", UUID.class), rs.getObject("customer_id", UUID.class),
                     rs.getString("currency"), rs.getString("idempotency_key"), rs.getString("status")));

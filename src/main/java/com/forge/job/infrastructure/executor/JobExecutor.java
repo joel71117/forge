@@ -88,9 +88,6 @@ public class JobExecutor {
             handlers.handlerFor(job).handle(job);
             job.complete();
             completed.increment();
-        } catch (InterruptedException exception) {
-            Thread.currentThread().interrupt();
-            handleFailure(job);
         } catch (Exception exception) {
             handleFailure(job);
         } finally {

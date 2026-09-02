@@ -22,18 +22,12 @@ public class NotificationAttempt {
     private String errorCode;
     private String errorMessage;
 
-    public NotificationAttempt(UUID notificationId, String provider, int attemptNumber, Instant startedAt,
-                              Instant finishedAt, String status, String providerReference,
-                              String errorCode, String errorMessage) {
+    public NotificationAttempt(UUID notificationId, String provider, int attemptNumber, Instant startedAt) {
         this.id = new NotificationAttemptId(UUID.randomUUID());
         this.notificationId = notificationId;
         this.provider = provider;
         this.attemptNumber = attemptNumber;
         this.startedAt = startedAt;
-        this.finishedAt = finishedAt;
-        this.status = status;
-        this.providerReference = providerReference;
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
+        this.status = "PROCESSING";
     }
 }

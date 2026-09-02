@@ -25,14 +25,17 @@ class ProcessedEventStoreTest {
 
         assertTrue(store.process(eventId, "order-projection", () -> "projection-42"));
 
-        verify(jdbc).update(anyString(), "projection-42", eventId, "order-projection");
+        verify(jdbc).update(anyString(), org.mockito.ArgumentMatchers.eq("projection-42"),
+                org.mockito.ArgumentMatchers.eq(eventId),
+                org.mockito.ArgumentMatchers.eq("order-projection"));
     }
 
     @Test
     void skipsDuplicateEventWithoutRunningOperation() {
         JdbcTemplate jdbc = mock(JdbcTemplate.class);
         UUID eventId = UUID.randomUUID();
-        when(jdbc.update(anyString(), eventId, "notification-worker")).thenReturn(0);
+        when(jdbc.update(anyString(), org.mockito.ArgumentMatchers.eq(eventId),
+                org.mockito.ArgumentMatchers.eq("notification-worker"))).thenReturn(0);
         AtomicBoolean ran = new AtomicBoolean();
         ProcessedEventStore store = new ProcessedEventStore(jdbc);
 
@@ -42,6 +45,8 @@ class ProcessedEventStoreTest {
         }));
 
         assertFalse(ran.get());
+        verify(jdbc).update(anyString(), org.mockito.ArgumentMatchers.eq(eventId),
+                org.mockito.ArgumentMatchers.eq("notification-worker"));
         verifyNoMoreInteractions(jdbc);
     }
 
@@ -49,7 +54,8 @@ class ProcessedEventStoreTest {
     void propagatesOperationFailureWithoutWritingAResult() {
         JdbcTemplate jdbc = mock(JdbcTemplate.class);
         UUID eventId = UUID.randomUUID();
-        when(jdbc.update(anyString(), eventId, "consumer")).thenReturn(1);
+        when(jdbc.update(anyString(), org.mockito.ArgumentMatchers.eq(eventId),
+                org.mockito.ArgumentMatchers.eq("consumer"))).thenReturn(1);
         ProcessedEventStore store = new ProcessedEventStore(jdbc);
 
         assertEquals("handler failed", org.junit.jupiter.api.Assertions.assertThrows(
@@ -59,6 +65,7 @@ class ProcessedEventStoreTest {
                 }))
                 .getMessage());
 
-        verify(jdbc).update(anyString(), eventId, "consumer");
+        verify(jdbc).update(anyString(), org.mockito.ArgumentMatchers.eq(eventId),
+                org.mockito.ArgumentMatchers.eq("consumer"));
     }
 }

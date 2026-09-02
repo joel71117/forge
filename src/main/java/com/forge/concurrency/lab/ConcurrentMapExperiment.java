@@ -9,6 +9,7 @@ public final class ConcurrentMapExperiment {
 
     private final Map<String, String> values = new ConcurrentHashMap<>();
 
+    @SuppressWarnings("java:S3824")
     public boolean unsafeCheckThenAct(String key, String value,
             CountDownLatch checksCompleted, CountDownLatch allowWrites) throws InterruptedException {
         if (!values.containsKey(key)) {
