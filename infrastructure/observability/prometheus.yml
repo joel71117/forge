@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: forge
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [forge-a:8080, forge-b:8080, forge-c:8080]
+  - job_name: notification-service
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [notification-service:8080]

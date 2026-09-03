@@ -4,8 +4,12 @@ namespace: forge
 resources:
   - namespace.yaml
   - serviceaccount.yaml
+  - notification-serviceaccount.yaml
+  - rbac.yaml
   - configmap.yaml
   - deployment.yaml
+  - notification-deployment.yaml
+  - notification-postgres.yaml
   - service.yaml
   - ingress.yaml
   - hpa.yaml

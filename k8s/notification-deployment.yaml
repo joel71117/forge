@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forge-notification
+  namespace: forge
+  labels: { app.kubernetes.io/name: forge-notification }
+spec:
+  replicas: 2
+  selector:
+    matchLabels: { app.kubernetes.io/name: forge-notification }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: forge-notification }
+    spec:
+      serviceAccountName: forge-notification
+      terminationGracePeriodSeconds: 45
+      containers:
+        - name: notification
+          image: forge-notification:phase-6
+          imagePullPolicy: IfNotPresent
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: forge-config }
+            - secretRef: { name: forge-notification-secrets }
+          env:
+            - name: SPRING_KAFKA_CONSUMER_GROUP_ID
+              value: forge-notification-service
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://notification-postgres:5432/notifications
+          startupProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /actuator/health/readiness, port: http }
+            periodSeconds: 5
+          livenessProbe:
+            httpGet: { path: /actuator/health/liveness, port: http }
+            periodSeconds: 10
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: 500m, memory: 512Mi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forge-notification
+  namespace: forge
+spec:
+  selector: { app.kubernetes.io/name: forge-notification }
+  ports: [{ name: http, port: 8080, targetPort: http }]

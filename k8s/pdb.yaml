@@ -8,3 +8,4 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: forge-api
+      forge.release: stable

@@ -12,7 +12,7 @@ import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(name = "forge.kafka.consumer.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "forge.notification.local-consumer.enabled", havingValue = "true", matchIfMissing = true)
 public class NotificationCreatedConsumer {
     private static final String CONSUMER_NAME = "notification-delivery";
 
@@ -27,17 +27,13 @@ public class NotificationCreatedConsumer {
         this.delivery = delivery;
     }
 
-        @RetryableTopic(attempts = "${forge.kafka.retry.attempts:4}",
-            backOff = @BackOff(delayString = "${forge.kafka.retry.delay-ms:1000}",
-                multiplierString = "${forge.kafka.retry.multiplier:2.0}",
-                maxDelayString = "${forge.kafka.retry.max-delay-ms:8000}",
-                jitterString = "${forge.kafka.retry.jitter-ms:250}"),
-            autoCreateTopics = "true")
+    @RetryableTopic(attempts = "${forge.kafka.retry.attempts:4}", backOff = @BackOff(delayString = "${forge.kafka.retry.delay-ms:1000}", multiplierString = "${forge.kafka.retry.multiplier:2.0}", maxDelayString = "${forge.kafka.retry.max-delay-ms:8000}", jitterString = "${forge.kafka.retry.jitter-ms:250}"), autoCreateTopics = "true")
     @KafkaListener(topics = "${forge.kafka.events-topic}", groupId = "notification-delivery")
     public void consume(String message) {
         try {
             EventEnvelope event = objectMapper.readValue(message, EventEnvelope.class);
-            if (!"NotificationCreated".equals(event.eventType())) return;
+            if (!"NotificationCreated".equals(event.eventType()))
+                return;
             processedEvents.process(event.eventId(), CONSUMER_NAME,
                     () -> delivery.deliver(java.util.UUID.fromString(event.aggregateId())));
         } catch (Exception exception) {

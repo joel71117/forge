@@ -5,6 +5,7 @@ metadata:
   namespace: forge
   labels:
     app.kubernetes.io/name: forge-api
+    forge.release: stable
 spec:
   replicas: 3
   strategy:
@@ -19,6 +20,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: forge-api
+        forge.release: stable
     spec:
       serviceAccountName: forge-api
       terminationGracePeriodSeconds: 45
@@ -29,6 +31,7 @@ spec:
           labelSelector:
             matchLabels:
               app.kubernetes.io/name: forge-api
+              forge.release: stable
       containers:
         - name: forge-api
           image: forge:phase-6

@@ -11,6 +11,18 @@ services:
       timeout: 3s
       retries: 10
 
+  notification-postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: notifications
+      POSTGRES_USER: notifications
+      POSTGRES_PASSWORD: notifications_dev_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notifications -d notifications"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   redis:
     image: redis:7.4-alpine
     command: redis-server --appendonly yes
@@ -59,6 +71,7 @@ services:
       FORGE_REDIS_CACHE_ENABLED: "true"
       FORGE_REDIS_LOCKS_ENABLED: "true"
       FORGE_SCHEDULED_OWNERSHIP_ENABLED: "true"
+      FORGE_NOTIFICATION_LOCAL_CONSUMER_ENABLED: "false"
       FORGE_KAFKA_CONSUMER_GROUP_ID: forge-job-workers
     ports:
       - "8081:8080"
@@ -89,4 +102,19 @@ services:
     depends_on:
       postgres: { condition: service_healthy }
       redis: { condition: service_healthy }
+      kafka: { condition: service_healthy }
+
+  notification-service:
+    build:
+      context: ../notification-service
+      dockerfile: Dockerfile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://notification-postgres:5432/notifications
+      SPRING_DATASOURCE_USERNAME: notifications
+      SPRING_DATASOURCE_PASSWORD: notifications_dev_password
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8084:8080"
+    depends_on:
+      notification-postgres: { condition: service_healthy }
       kafka: { condition: service_healthy }

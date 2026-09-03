@@ -1,0 +1,21 @@
+services:
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    volumes: ["./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment: { GF_AUTH_ANONYMOUS_ENABLED: "true", GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer }
+    volumes: ["forge-grafana-data:/var/lib/grafana"]
+    ports: ["3000:3000"]
+  loki:
+    image: grafana/loki:3.5.3
+    command: -config.file=/etc/loki/local-config.yaml
+    ports: ["3100:3100"]
+  tempo:
+    image: grafana/tempo:2.8.2
+    command: ["-target=all", "-storage.trace.backend=local", "-storage.trace.local.path=/tmp/tempo"]
+    ports: ["3200:3200", "4317:4317", "4318:4318"]
+
+volumes:
+  forge-grafana-data:

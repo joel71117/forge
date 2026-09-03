@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forge-api-canary
+  namespace: forge
+  labels: { app.kubernetes.io/name: forge-api, forge.release: canary }
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app.kubernetes.io/name: forge-api, forge.release: canary }
+  template:
+    metadata:
+      labels: { app.kubernetes.io/name: forge-api, forge.release: canary }
+    spec:
+      serviceAccountName: forge-api
+      containers:
+        - name: forge-api
+          image: forge:canary
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: forge-config }
+            - secretRef: { name: forge-secrets }
+          readinessProbe: { httpGet: { path: /actuator/health/readiness, port: http } }
+          livenessProbe: { httpGet: { path: /actuator/health/liveness, port: http } }
+          resources:
+            requests: { cpu: 250m, memory: 512Mi }
+            limits: { cpu: 1000m, memory: 1Gi }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forge-api-canary
+  namespace: forge
+spec:
+  selector: { app.kubernetes.io/name: forge-api, forge.release: canary }
+  ports: [{ name: http, port: 8080, targetPort: http }]

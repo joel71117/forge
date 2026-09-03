@@ -1,0 +1,1 @@
+{"title":"Forge USE","schemaVersion":39,"panels":[{"type":"timeseries","title":"JVM memory","targets":[{"expr":"jvm_memory_used_bytes"}]},{"type":"timeseries","title":"DB pool utilization","targets":[{"expr":"hikaricp_active / hikaricp_max"}]},{"type":"timeseries","title":"Kafka lag","targets":[{"expr":"forge_kafka_consumer_lag"}]}]}

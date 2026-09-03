@@ -1,0 +1,19 @@
+name: Forge CI Quality and Security
+on:
+  push:
+  pull_request:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '21', cache: maven }
+      - run: ./mvnw -B verify
+      - uses: anchore/sbom-action@v0.17.0
+        with: { path: '.', artifact-name: forge-sbom.spdx.json, output-file: forge-sbom.spdx.json }
+      - uses: aquasecurity/trivy-action@0.28.0
+        with: { scan-type: fs, scan-ref: '.', severity: CRITICAL,HIGH, ignore-unfixed: true }
+      - run: docker build --tag forge:${{ github.sha }} .
+      - uses: aquasecurity/trivy-action@0.28.0
+        with: { image-ref: forge:${{ github.sha }}, severity: CRITICAL,HIGH, ignore-unfixed: true }
