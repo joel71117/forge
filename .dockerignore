@@ -1,0 +1,9 @@
+.git
+.github
+target
+*.log
+Docs
+database
+infrastructure
+Dockerfile
+README.md

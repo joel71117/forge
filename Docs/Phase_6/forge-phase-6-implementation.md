@@ -111,7 +111,7 @@ Do **not** split every Forge module into a microservice. Extract a service only 
 Create:
 
 ```text
-docs/service-boundaries.md
+Docs/Phase_6/production-operations.md
 ```
 
 Evaluate:
@@ -844,7 +844,7 @@ Determine which Redis state is recreatable and which Kafka data can rebuild proj
 Create:
 
 ```text
-docs/capacity-plan.md
+Docs/Phase_6/production-operations.md
 ```
 
 Estimate:
@@ -1132,20 +1132,7 @@ How is it rolled back?
 Create:
 
 ```text
-docs/production-architecture.md
-docs/service-boundaries.md
-docs/service-communication.md
-docs/saga-design.md
-docs/kubernetes-architecture.md
-docs/observability.md
-docs/sli-slo.md
-docs/error-budget.md
-docs/capacity-plan.md
-docs/disaster-recovery.md
-docs/security-architecture.md
-docs/deployment-strategy.md
-docs/chaos-engineering.md
-docs/incident-response.md
+Docs/Phase_6/production-operations.md
 ```
 
 ADRs:
