@@ -16,4 +16,4 @@ jobs:
         with: { scan-type: fs, scan-ref: '.', severity: CRITICAL,HIGH, ignore-unfixed: true }
       - run: docker build --tag forge:${{ github.sha }} .
       - uses: aquasecurity/trivy-action@0.28.0
-        with: { image-ref: forge:${{ github.sha }}, severity: CRITICAL,HIGH, ignore-unfixed: true }
+        with: { image-ref: 'forge:${{ github.sha }}', severity: CRITICAL,HIGH, ignore-unfixed: true }
